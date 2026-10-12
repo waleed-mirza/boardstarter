@@ -1,0 +1,12 @@
+/* Remote preset: blue is the default accent. */
+:root[data-preset="remote"]:not([data-accent="violet"]):not([data-accent="green"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-remote);
+  --color-accent-text: var(--color-accent-remote-text);
+  --color-accent-subtle: var(--color-accent-remote-subtle);
+}
+
+.dark[data-preset="remote"]:not([data-accent="violet"]):not([data-accent="green"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-remote-dark);
+  --color-accent-text: var(--color-accent-remote-text-dark);
+  --color-accent-subtle: var(--color-accent-remote-subtle-dark);
+}

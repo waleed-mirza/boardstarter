@@ -1,0 +1,54 @@
+# Netlify's Next.js adapter is automatic; this file keeps the template's
+# build contract and Deploy to Netlify prompts in version control.
+
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+  # These values are intentionally non-secret metadata used in docs/fixtures;
+  # keep Netlify scanning enabled for actual credentials and tokens.
+  SECRETS_SCAN_OMIT_KEYS = "EMAIL_PROVIDER,EMAIL_FROM,ADMIN_EMAIL,PAYMENT_PROVIDER"
+
+[template.environment]
+  NEXT_PUBLIC_SITE_URL = "Canonical URL for the deployed job board"
+  NEXT_PUBLIC_SUPABASE_URL = "Supabase project URL"
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "Supabase publishable key (sb_publishable_...)"
+  SUPABASE_SECRET_KEY = "Supabase secret key (sb_secret_...)"
+  PAYMENT_PROVIDER = "lemonsqueezy in production; fake only for local/E2E runs"
+  LEMONSQUEEZY_API_KEY = "Lemon Squeezy API key"
+  LEMONSQUEEZY_STORE_ID = "Lemon Squeezy store ID"
+  LEMONSQUEEZY_WEBHOOK_SECRET = "Lemon Squeezy webhook signing secret"
+  RESEND_API_KEY = "Resend API key"
+  EMAIL_FROM = "Verified sender, for example Jobs <jobs@yourdomain.com>"
+  EMAIL_PROVIDER = "resend in production"
+  ALERT_TOKEN_SECRET = "Secret used to sign alert links"
+  CRON_SECRET = "Secret used to authenticate scheduled jobs"
+  ADMIN_EMAIL = "Initial administrator email address"
+  GROQ_API_KEY = "Optional Groq API key"
+  GOOGLE_INDEXING_SA_JSON = "Optional Google Indexing service-account JSON"
+  NEXT_PUBLIC_PRESET = "remote"
+  NEXT_PUBLIC_AUTH_GOOGLE_ENABLED = "Set to true after enabling Google Auth in Supabase"
+  DATABASE_URL = "Supabase session-pooler connection string used by setup"
+  TEST_DATABASE_URL = "Optional test database connection string"
+  RATE_LIMIT_SECRET = "Optional HMAC secret for distributed request fingerprints"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; connect-src 'self' https: wss:;"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/api/:splat"
+  status = 200
+  force = true
+  [redirects.rate_limit]
+    policy = "ip"
+    window_size = 60
+    max = 60

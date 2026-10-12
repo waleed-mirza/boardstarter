@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "event_name": "order_created",
+    "custom_data": {
+      "job_id": "00000000-0000-0000-0000-000000000001",
+      "package_id": "00000000-0000-0000-0000-000000000002"
+    }
+  },
+  "data": {
+    "type": "orders",
+    "id": "test-order-created-1",
+    "attributes": {
+      "customer_id": 1001,
+      "currency": "USD",
+      "total": 4900,
+      "first_order_item": {
+        "variant_id": 1002,
+        "price": 4900
+      }
+    }
+  }
+}

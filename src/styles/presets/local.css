@@ -1,0 +1,13 @@
+/* Local preset: green is the default accent. */
+:root[data-preset="local"]:not([data-accent="blue"]):not([data-accent="violet"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-green);
+  --color-accent-text: var(--color-accent-green-text);
+  --color-accent-subtle: var(--color-accent-green-subtle);
+}
+
+.dark[data-preset="local"]:not([data-accent="blue"]):not([data-accent="violet"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-green-dark);
+  --color-accent-text: var(--color-accent-green-text-dark);
+  --color-accent-subtle: var(--color-accent-green-subtle-dark);
+}
+

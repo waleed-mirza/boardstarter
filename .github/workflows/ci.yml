@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: typecheck · lint · unit
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_DEPLOYMENT_SURFACE: demo
+      DEPLOYMENT_SURFACE: demo
+      # Quality tests are intentionally isolated from production credentials.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-project.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci
+      SUPABASE_SECRET_KEY: sb_secret_ci
+      PAYMENT_PROVIDER: fake
+      LEMONSQUEEZY_API_KEY: ci-placeholder
+      LEMONSQUEEZY_STORE_ID: ci-placeholder
+      LEMONSQUEEZY_WEBHOOK_SECRET: ci-placeholder
+      EMAIL_PROVIDER: fake
+      RESEND_API_KEY: re_ci_placeholder
+      EMAIL_FROM: Jobs <jobs@example.test>
+      CRON_SECRET: ci-week8-cron-secret
+      ALERT_TOKEN_SECRET: ci-week8-alert-token-secret-0123456789012345
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4 # reads packageManager from package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm lint:forbidden
+      - run: pnpm check-env --strict
+      - run: pnpm test:unit
+      - run: pnpm test:payments
+
+  db:
+    name: migrations · pgTAP
+    runs-on: ubuntu-latest
+    concurrency:
+      group: boardstarter-cloud-test-database
+      cancel-in-progress: false
+    # No Docker anywhere (ADR 0003): scripts connect to the cloud Supabase
+    # test project; each pgTAP file runs in a rolled-back transaction.
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:reset
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          BOARDSTARTER_DB_RESET_CONFIRM: ${{ secrets.BOARDSTARTER_DB_RESET_CONFIRM }}
+      - run: pnpm db:reset
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          BOARDSTARTER_DB_RESET_CONFIRM: ${{ secrets.BOARDSTARTER_DB_RESET_CONFIRM }}
+      - run: pnpm db:push
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      - run: pnpm gen:types
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      - run: git diff --exit-code -- src/lib/supabase/types.ts
+      - run: pnpm test:db
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+      - run: pnpm test:data
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      - run: pnpm test:int
+        env:
+          TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+
+  e2e:
+    needs: db
+    env:
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      PAYMENT_PROVIDER: fake
+      EMAIL_PROVIDER: fake
+      EMAIL_FROM: Jobs <jobs@example.test>
+      CRON_SECRET: ci-week8-cron-secret
+      ALERT_TOKEN_SECRET: ci-week8-alert-token-secret-0123456789012345
+      LEMONSQUEEZY_WEBHOOK_SECRET: ${{ secrets.LEMONSQUEEZY_WEBHOOK_SECRET || 'ci-week-six-webhook-secret' }}
+    name: build · e2e · axe · visual
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Visual baselines live in the commit; full history not needed.
+          fetch-depth: 1
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm test:lighthouse
+      - run: pnpm verify:security
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

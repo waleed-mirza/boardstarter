@@ -1,0 +1,287 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* Vendored from shadcn@4.21.0 dist/tailwind.css (keyframes, data-state variants).
+   Structural only — no tokens defined there. Re-vendor only on CLI upgrade. */
+@import "./shadcn-base.css";
+@import "./presets/remote.css";
+@import "./presets/ai.css";
+@import "./presets/local.css";
+@import "./presets/community.css";
+
+/* Class-based dark mode: `.dark` on <html>, set before paint by the inline
+   script in src/app/layout.tsx (no flash). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+ * Design tokens — the single source of truth (build plan §5.3).
+ * Components reference tokens only. Never a raw color/radius/spacing/type size.
+ * ------------------------------------------------------------------------- */
+@theme {
+  /* Neutrals — the whole UI is built from these */
+  --color-bg: oklch(100% 0 0);
+  --color-bg-subtle: oklch(98.4% 0.002 250);
+  --color-bg-muted: oklch(96.5% 0.003 250);
+  --color-border: oklch(92.5% 0.004 250);
+  --color-border-strong: oklch(87% 0.005 250);
+  --color-fg: oklch(21% 0.006 250);
+  --color-fg-muted: oklch(50% 0.008 250);
+  --color-fg-subtle: oklch(48% 0.007 250);
+
+  /* Accent — the ONE color; swapped per preset */
+  --color-accent: oklch(55% 0.17 255);
+  --color-accent-fg: oklch(99% 0 0);
+  --color-accent-subtle: oklch(96% 0.03 255);
+  --color-accent-remote: oklch(55% 0.17 255);
+  --color-accent-remote-text: oklch(55% 0.17 255);
+  --color-accent-remote-subtle: oklch(96% 0.03 255);
+  --color-accent-remote-dark: oklch(56% 0.16 255);
+  --color-accent-remote-text-dark: oklch(74% 0.13 255);
+  --color-accent-remote-subtle-dark: oklch(26% 0.05 255);
+  --color-accent-violet: oklch(55% 0.19 300);
+  --color-accent-violet-text: oklch(48% 0.18 300);
+  --color-accent-violet-subtle: oklch(96% 0.035 300);
+  --color-accent-green: oklch(52% 0.15 155);
+  --color-accent-green-text: oklch(45% 0.14 155);
+  --color-accent-green-subtle: oklch(95% 0.035 155);
+  --color-accent-amber: oklch(62% 0.16 75);
+  --color-accent-amber-text: oklch(47% 0.14 75);
+  --color-accent-amber-subtle: oklch(96% 0.04 75);
+  --color-accent-violet-dark: oklch(64% 0.18 300);
+  --color-accent-violet-text-dark: oklch(78% 0.15 300);
+  --color-accent-violet-subtle-dark: oklch(27% 0.06 300);
+  --color-accent-green-dark: oklch(62% 0.15 155);
+  --color-accent-green-text-dark: oklch(77% 0.13 155);
+  --color-accent-green-subtle-dark: oklch(26% 0.05 155);
+  --color-accent-amber-dark: oklch(70% 0.16 75);
+  --color-accent-amber-text-dark: oklch(82% 0.14 75);
+  --color-accent-amber-subtle-dark: oklch(29% 0.06 75);
+  /* Accent used AS TEXT on the page background (links) — dark mode needs it
+     brighter than the fill accent to clear WCAG AA. */
+  --color-accent-text: oklch(55% 0.17 255);
+
+  /* Status — semantic only, never decorative. Tuned ~6–8% darker than the
+     §5.3 reference values so status text on /10 tints clears WCAG AA 4.5:1
+     (Test Gate: axe zero serious/critical). */
+  --color-success: oklch(50% 0.12 155);
+  --color-warning: oklch(50% 0.12 75);
+  --color-danger: oklch(50% 0.19 25);
+
+  /* Radius — one source (sm .375 · md .5 · lg .75 · full 9999) */
+  --radius: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Type scale — 8 sizes, no improvisation */
+  --text-2xs: 0.6875rem; /* 11 — table meta, uppercase labels */
+  --text-xs: 0.75rem; /* 12 — badges, timestamps */
+  --text-sm: 0.875rem; /* 14 — UI default, table body */
+  --text-base: 1rem; /* 16 — prose */
+  --text-lg: 1.125rem; /* 18 — job titles in rows */
+  --text-xl: 1.375rem; /* 22 — section headings */
+  --text-2xl: 1.75rem; /* 28 — page titles */
+  --text-3xl: 2.5rem; /* 40 — marketing h1 only */
+
+  /* Line heights + tracking per §5.3: body 1.55, headings 1.2,
+     ≥28px gets -0.02em */
+  --text-base--line-height: 1.55;
+  --text-lg--line-height: 1.45;
+  --text-xl--line-height: 1.2;
+  --text-xl--letter-spacing: -0.01em;
+  --text-2xl--line-height: 1.2;
+  --text-2xl--letter-spacing: -0.02em;
+  --text-3xl--line-height: 1.1;
+  --text-3xl--letter-spacing: -0.02em;
+
+  /* Layout widths (generates max-w-page / max-w-content) */
+  --container-page: 80rem; /* 1280 — shell width */
+  --container-content: 40rem; /* 640 — forms, hero text */
+  --container-prose: 68ch;
+  --container-filter: 16.25rem;
+  --container-apply: 15rem;
+
+  /* Shadows — ONLY on things that genuinely float (§5.1): dropdowns,
+     popovers, dialogs, toasts. Never cards or buttons. */
+  --shadow-overlay: 0 4px 16px -2px oklch(21% 0.006 250 / 0.1), 0 1px 3px oklch(21% 0.006 250 / 0.08);
+
+  /* Motion: 120ms hover/press, 200ms panels (utility duration-120/200) */
+}
+
+/* ---------------------------------------------------------------------------
+ * shadcn/ui semantic aliases — mapped onto the tokens above so the owned
+ * primitives in src/components/ui consume the same palette. `inline` keeps
+ * them resolving against `.dark` token overrides. 4.x components hover with
+ * bg-muted (not bg-accent), so the `accent` name stays purely ours.
+ * ------------------------------------------------------------------------- */
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --color-card: var(--color-bg);
+  --color-card-foreground: var(--color-fg);
+  --color-popover: var(--color-bg);
+  --color-popover-foreground: var(--color-fg);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--color-accent-fg);
+  --color-secondary: var(--color-bg-muted);
+  --color-secondary-foreground: var(--color-fg);
+  --color-muted: var(--color-bg-muted);
+  --color-muted-foreground: var(--color-fg-muted);
+  --color-destructive: var(--color-danger);
+  --color-destructive-foreground: var(--color-accent-fg);
+  --color-border: var(--color-border);
+  --color-input: var(--color-border);
+  --color-ring: var(--color-accent);
+}
+
+/* Dark theme redefines ONLY the tokens — never a component-level literal. */
+.dark {
+  --color-bg: oklch(15.5% 0.004 250);
+  --color-bg-subtle: oklch(18% 0.004 250);
+  --color-bg-muted: oklch(22.5% 0.005 250);
+  --color-border: oklch(27% 0.005 250);
+  --color-border-strong: oklch(36% 0.006 250);
+  --color-fg: oklch(95% 0.004 250);
+  --color-fg-muted: oklch(69% 0.006 250);
+  --color-fg-subtle: oklch(68% 0.006 250);
+
+  /* 56% (not 64%) so white text on accent clears WCAG AA — buttons are the
+     main accent carrier in dark mode too. */
+  --color-accent: oklch(56% 0.16 255);
+  --color-accent-text: oklch(74% 0.13 255);
+  --color-accent-fg: oklch(99% 0 0);
+  --color-accent-subtle: oklch(26% 0.05 255);
+  --color-success: oklch(70% 0.13 155);
+  --color-warning: oklch(76% 0.15 75);
+  --color-danger: oklch(70% 0.17 25);
+
+  --shadow-overlay: 0 4px 16px -2px oklch(0% 0 0 / 0.5), 0 1px 3px oklch(0% 0 0 / 0.4);
+}
+
+/* Buyer-selected accent palettes. These are semantic token overrides; UI
+   components continue to reference --color-accent rather than raw colors. */
+:root[data-accent="violet"] {
+  --color-accent: var(--color-accent-violet);
+  --color-accent-text: var(--color-accent-violet-text);
+  --color-accent-subtle: var(--color-accent-violet-subtle);
+}
+:root[data-accent="green"] {
+  --color-accent: var(--color-accent-green);
+  --color-accent-text: var(--color-accent-green-text);
+  --color-accent-subtle: var(--color-accent-green-subtle);
+}
+:root[data-accent="amber"] {
+  --color-accent: var(--color-accent-amber);
+  --color-accent-text: var(--color-accent-amber-text);
+  --color-accent-subtle: var(--color-accent-amber-subtle);
+}
+.dark[data-accent="violet"] {
+  --color-accent: var(--color-accent-violet-dark);
+  --color-accent-text: var(--color-accent-violet-text-dark);
+  --color-accent-subtle: var(--color-accent-violet-subtle-dark);
+}
+.dark[data-accent="green"] {
+  --color-accent: var(--color-accent-green-dark);
+  --color-accent-text: var(--color-accent-green-text-dark);
+  --color-accent-subtle: var(--color-accent-green-subtle-dark);
+}
+.dark[data-accent="amber"] {
+  --color-accent: var(--color-accent-amber-dark);
+  --color-accent-text: var(--color-accent-amber-text-dark);
+  --color-accent-subtle: var(--color-accent-amber-subtle-dark);
+}
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------- */
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-fg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Utilities
+ * ------------------------------------------------------------------------- */
+
+/* Page shell width: 1280 max, 16px gutters mobile / 32px from md up. */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-page);
+  padding-inline: 1rem;
+  @media (width >= 48rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* §5.3: every interactive element — 2px accent ring, 2px offset. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* Numbers in tables and stats. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility job-prose {
+  max-width: var(--container-prose);
+  line-height: 1.55;
+
+  & h2,
+  & h3 {
+    margin-top: 2rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  & h2 { font-size: var(--text-xl); }
+  & h3 { font-size: var(--text-lg); }
+  & p { margin-top: 1rem; }
+  & ul { margin-top: 1rem; list-style: disc; padding-left: 1.5rem; }
+  & ol { margin-top: 1rem; list-style: decimal; padding-left: 1.5rem; }
+  & li + li { margin-top: 0.5rem; }
+  & a { color: var(--color-accent-text); text-decoration: underline; text-underline-offset: 0.2em; }
+  & code { border-radius: var(--radius-sm); background: var(--color-bg-muted); padding-inline: 0.25rem; font-family: var(--font-geist-mono); font-size: var(--text-sm); }
+  & pre { margin-top: 1rem; overflow-x: auto; border: 1px solid var(--color-border); background: var(--color-bg-muted); padding: 1rem; }
+  & pre code { background: transparent; padding: 0; }
+}

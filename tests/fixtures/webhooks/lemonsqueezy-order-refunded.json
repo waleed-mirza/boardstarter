@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "event_name": "order_refunded",
+    "custom_data": {
+      "job_id": "00000000-0000-0000-0000-000000000001"
+    }
+  },
+  "data": {
+    "type": "orders",
+    "id": "test-order-refunded-1",
+    "attributes": {
+      "customer_id": 1001,
+      "currency": "USD"
+    }
+  }
+}

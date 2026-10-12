@@ -1,0 +1,13 @@
+/* Community preset: amber is the default accent. */
+:root[data-preset="community"]:not([data-accent="blue"]):not([data-accent="violet"]):not([data-accent="green"]) {
+  --color-accent: var(--color-accent-amber);
+  --color-accent-text: var(--color-accent-amber-text);
+  --color-accent-subtle: var(--color-accent-amber-subtle);
+}
+
+.dark[data-preset="community"]:not([data-accent="blue"]):not([data-accent="violet"]):not([data-accent="green"]) {
+  --color-accent: var(--color-accent-amber-dark);
+  --color-accent-text: var(--color-accent-amber-text-dark);
+  --color-accent-subtle: var(--color-accent-amber-subtle-dark);
+}
+

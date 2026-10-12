@@ -1,0 +1,13 @@
+/* AI preset: violet is the default accent. */
+:root[data-preset="ai"]:not([data-accent="blue"]):not([data-accent="green"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-violet);
+  --color-accent-text: var(--color-accent-violet-text);
+  --color-accent-subtle: var(--color-accent-violet-subtle);
+}
+
+.dark[data-preset="ai"]:not([data-accent="blue"]):not([data-accent="green"]):not([data-accent="amber"]) {
+  --color-accent: var(--color-accent-violet-dark);
+  --color-accent-text: var(--color-accent-violet-text-dark);
+  --color-accent-subtle: var(--color-accent-violet-subtle-dark);
+}
+

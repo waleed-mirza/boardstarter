@@ -1,0 +1,32 @@
+name: Demo Supabase keep-alive
+
+on:
+  schedule:
+    # A daily request leaves plenty of margin before a free Supabase project
+    # can become idle, without running listing automation on the demo.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+    steps:
+      - name: Check GitHub Actions configuration
+        id: configuration
+        run: |
+          if [[ -z "${SITE_URL:-}" || -z "${CRON_SECRET:-}" ]]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Keep-alive skipped::Add NEXT_PUBLIC_SITE_URL and CRON_SECRET as Actions secrets to enable the demo keep-alive."
+            exit 0
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+      - name: Keep Supabase alive
+        if: steps.configuration.outputs.configured == 'true'
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${SITE_URL}/api/cron/keep-alive"

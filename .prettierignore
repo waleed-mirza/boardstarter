@@ -1,0 +1,7 @@
+.next
+node_modules
+pnpm-lock.yaml
+*.woff2
+BOARDSTARTER-10-WEEK-BUILD-PLAN.md
+e2e/visual/**/*-snapshots/
+supabase/.temp
