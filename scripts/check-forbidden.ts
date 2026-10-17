@@ -54,6 +54,7 @@ const EXCLUDED_FILES = new Set([
   "AGENTS.md",
   "CLAUDE.md",
   "BOARDSTARTER-10-WEEK-BUILD-PLAN.md",
+  join("docs", "BOARDSTARTER-10-WEEK-BUILD-PLAN.md"),
   "eslint.config.mjs",
   "pnpm-lock.yaml",
   "scripts/check-forbidden.ts",

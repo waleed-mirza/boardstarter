@@ -26,7 +26,12 @@ describe("brand contract", () => {
 
   it("keeps docs casing consistent", () => {
     const root = process.cwd();
-    const files = filesUnder(join(root, "docs")).concat([join(root, "README.md")]);
+    // The historical build plan cites forbidden casings as examples of what
+    // not to ship; lint:forbidden excludes it for the same reason.
+    const excluded = new Set([join(root, "docs", "BOARDSTARTER-10-WEEK-BUILD-PLAN.md")]);
+    const files = filesUnder(join(root, "docs"))
+      .concat([join(root, "README.md")])
+      .filter((file) => !excluded.has(file));
     const bad = files.flatMap((file) => {
       const source = readFileSync(file, "utf8");
       const wrongProductCase = ["Board", "Starter"].join("");
