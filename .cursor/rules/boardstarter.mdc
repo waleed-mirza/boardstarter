@@ -13,7 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Boardstarter project rules
 
-Source of truth: [`BOARDSTARTER-10-WEEK-BUILD-PLAN.md`](../../BOARDSTARTER-10-WEEK-BUILD-PLAN.md). Read §0 (operating rules + forbidden patterns — CI greps for them) and the current week's section before writing code.
+Source of truth: [`docs/BOARDSTARTER-10-WEEK-BUILD-PLAN.md`](../../docs/BOARDSTARTER-10-WEEK-BUILD-PLAN.md). Read §0 (operating rules + forbidden patterns — CI greps for them) and the current week's section before writing code.
 
 Non-negotiables (violations are the plan's Appendix D failure modes):
 

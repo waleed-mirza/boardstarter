@@ -1,4 +1,4 @@
-# Job Board Template
+# Boardstarter
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
@@ -37,4 +37,4 @@ pnpm build
 
 ## License
 
-[MIT](./LICENSE) © Muhammad waleed akhtar
+[MIT](./LICENSE) © WHH Treasures

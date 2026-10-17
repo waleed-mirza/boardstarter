@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Open-source self-hosted niche job board",
   "license": "MIT",
+  "author": "WHH Treasures",
   "private": true,
   "scripts": {
     "dev": "next dev",
